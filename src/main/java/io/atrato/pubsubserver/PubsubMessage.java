@@ -1,5 +1,7 @@
 package io.atrato.pubsubserver;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * Created by david on 1/23/17.
  */
@@ -28,13 +30,13 @@ public class PubsubMessage
 
   private Type type;
   private String topic;
-  private String data;
+  private JsonNode data;
 
   public PubsubMessage()
   {
   }
 
-  public PubsubMessage(Type type, String topic, String data)
+  public PubsubMessage(Type type, String topic, JsonNode data)
   {
     this.type = type;
     this.topic = topic;
@@ -51,7 +53,7 @@ public class PubsubMessage
     return topic;
   }
 
-  public String getData()
+  public JsonNode getData()
   {
     return data;
   }
@@ -66,7 +68,7 @@ public class PubsubMessage
     this.topic = topic;
   }
 
-  public void setData(String data)
+  public void setData(JsonNode data)
   {
     this.data = data;
   }

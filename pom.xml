@@ -4,9 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.apache.apex</groupId>
+    <artifactId>apex</artifactId>
+    <version>3.5.0</version>
+  </parent>
+
   <groupId>io.atrato</groupId>
   <artifactId>atrato-pubsub-server</artifactId>
   <version>1.0-SNAPSHOT</version>
+
   <build>
     <plugins>
       <plugin>
@@ -15,6 +22,21 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>io.atrato.pubsubserver.PubsubServer</mainClass>
         </configuration>
       </plugin>
     </plugins>

@@ -1,6 +1,7 @@
 package io.atrato.pubsubserver;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Throwables;
@@ -32,7 +33,7 @@ public class PubsubBroker
     return objectMapper.readValue(message, PubsubMessage.class);
   }
 
-  public synchronized void publish(String topic, String data)
+  public synchronized void publish(String topic, JsonNode data)
   {
     Set<PubsubSocket> pubsubSockets = topicToSubscribers.get(topic);
     if (pubsubSockets != null && !pubsubSockets.isEmpty()) {
