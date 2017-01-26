@@ -51,7 +51,7 @@ public class PubsubSocket extends WebSocketAdapter
   @Override
   public void onWebSocketClose(int statusCode, String reason)
   {
-    super.onWebSocketClose(statusCode,reason);
+    super.onWebSocketClose(statusCode, reason);
     broker.invalidateClient(this);
   }
 

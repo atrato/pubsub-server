@@ -6,6 +6,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
@@ -24,9 +25,11 @@ public class PubsubServer
   private static final int DEFAULT_PORT = 8890;
 
   private static final String CMD_OPTION_LISTEN_ADDRESS = "listenAddress";
+  private static final String CMD_OPTION_HTDOCS = "htdocs";
 
   private String host = DEFAULT_HOST;
   private int port = DEFAULT_PORT;
+  private String htdocsDir;
 
   public static class PubsubServlet extends WebSocketServlet
   {
@@ -42,6 +45,7 @@ public class PubsubServer
   {
     Options options = new Options();
     options.addOption(CMD_OPTION_LISTEN_ADDRESS, true, "Address to listen to. Default is " + DEFAULT_HOST + ":" + DEFAULT_PORT);
+    options.addOption(CMD_OPTION_HTDOCS, true, "The local directory where static files should be served.");
 
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(options, args);
@@ -63,11 +67,20 @@ public class PubsubServer
       }
     }
 
+    htdocsDir = cmd.getOptionValue(CMD_OPTION_HTDOCS, null);
+
   }
 
   void run() throws Exception
   {
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+    context.setContextPath("/");
+
+    if (htdocsDir != null) {
+      context.setResourceBase(htdocsDir);
+      ServletHolder staticFilesServlet = context.addServlet(DefaultServlet.class, "/");
+      staticFilesServlet.setInitOrder(10);
+    }
 
     ServletHolder wsServlet = new ServletHolder(PubsubServlet.class);
     context.addServlet(wsServlet, "/pubsub");
