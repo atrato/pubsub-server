@@ -13,7 +13,6 @@ import java.io.IOException;
 public class PubsubSocket extends WebSocketAdapter
 {
   private static final Logger LOG = LoggerFactory.getLogger(PubsubSocket.class);
-  private static PubsubBroker broker = new PubsubBroker();
 
   @Override
   public void onWebSocketConnect(Session session)
@@ -34,13 +33,13 @@ public class PubsubSocket extends WebSocketAdapter
     }
     switch (pubsubMessage.getType()) {
       case PUBLISH:
-        broker.publish(pubsubMessage.getTopic(), pubsubMessage.getData());
+        PubsubServer.getBroker().publish(pubsubMessage.getTopic(), pubsubMessage.getData());
         break;
       case SUBSCRIBE:
-        broker.subscribe(this, pubsubMessage.getTopic());
+        PubsubServer.getBroker().subscribe(this, pubsubMessage.getTopic());
         break;
       case UNSUBSCRIBE:
-        broker.unsubscribe(this, pubsubMessage.getTopic());
+        PubsubServer.getBroker().unsubscribe(this, pubsubMessage.getTopic());
         break;
       default:
         LOG.warn("Illegal message type \"{}\". Ignoring.", pubsubMessage.getType());
@@ -52,7 +51,7 @@ public class PubsubSocket extends WebSocketAdapter
   public void onWebSocketClose(int statusCode, String reason)
   {
     super.onWebSocketClose(statusCode, reason);
-    broker.invalidateClient(this);
+    PubsubServer.getBroker().invalidateClient(this);
   }
 
   @Override

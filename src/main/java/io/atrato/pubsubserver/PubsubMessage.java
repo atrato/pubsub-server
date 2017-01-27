@@ -31,16 +31,18 @@ public class PubsubMessage
   private Type type;
   private String topic;
   private JsonNode data;
+  private long timestamp;
 
   public PubsubMessage()
   {
   }
 
-  public PubsubMessage(Type type, String topic, JsonNode data)
+  public PubsubMessage(Type type, String topic, JsonNode data, long timestamp)
   {
     this.type = type;
     this.topic = topic;
     this.data = data;
+    this.timestamp = timestamp;
   }
 
   public Type getType()
@@ -58,6 +60,11 @@ public class PubsubMessage
     return data;
   }
 
+  public long getTimestamp()
+  {
+    return timestamp;
+  }
+
   public void setType(Type type)
   {
     this.type = type;
@@ -73,4 +80,8 @@ public class PubsubMessage
     this.data = data;
   }
 
+  public void setTimestamp(long timestamp)
+  {
+    this.timestamp = timestamp;
+  }
 }

@@ -11,6 +11,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 import java.net.InetSocketAddress;
 import java.util.regex.Matcher;
@@ -31,6 +32,8 @@ public class PubsubServer
   private int port = DEFAULT_PORT;
   private String htdocsDir;
 
+  private static PubsubBroker broker = new PubsubBroker();
+
   public static class PubsubServlet extends WebSocketServlet
   {
     @Override
@@ -39,6 +42,11 @@ public class PubsubServer
       factory.getPolicy().setIdleTimeout(1000000);
       factory.register(PubsubSocket.class);
     }
+  }
+
+  public static PubsubBroker getBroker()
+  {
+    return broker;
   }
 
   void init(String[] args) throws ParseException
@@ -76,17 +84,27 @@ public class PubsubServer
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
     context.setContextPath("/");
 
+    ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/ws/v1/*");
+
+    InetSocketAddress address = new InetSocketAddress(host, port);
+    Server jettyServer = new Server(address);
+    jettyServer.setHandler(context);
+
+    jerseyServlet.setInitOrder(50);
+
+    jerseyServlet.setInitParameter(
+        "jersey.config.server.provider.classnames",
+        io.atrato.pubsubserver.PubsubRestProvider.class.getCanonicalName());
+
+    ServletHolder wsServlet = new ServletHolder(PubsubServlet.class);
+    context.addServlet(wsServlet, "/pubsub");
+
     if (htdocsDir != null) {
       context.setResourceBase(htdocsDir);
       ServletHolder staticFilesServlet = context.addServlet(DefaultServlet.class, "/");
       staticFilesServlet.setInitOrder(10);
     }
 
-    ServletHolder wsServlet = new ServletHolder(PubsubServlet.class);
-    context.addServlet(wsServlet, "/pubsub");
-
-    InetSocketAddress address = new InetSocketAddress(host, port);
-    Server jettyServer = new Server(address);
     jettyServer.setHandler(context);
 
     try {
