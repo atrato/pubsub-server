@@ -48,7 +48,12 @@ then {timestampMillis}. Otherwise, it will suspend the response until a given to
 
 Note that by default, a topic will expire after 60 minutes if no messages have been published to the given topic.
 
-## How to test
+## How to build and test
+
+* Build the project
+
+        mvn package
+
 
 * Run the server
 
