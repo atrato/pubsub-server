@@ -50,14 +50,9 @@ Note that by default, a topic will expire after 60 minutes if no messages have b
 
 ## How to build and test
 
-* Build the project
-
-        mvn package
-
-
 * Run the server
 
-        mvn exec:java
+        mvn compile exec:java
 
 
 * Run Chrome and install the "Simple WebSocket Client" extension
