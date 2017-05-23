@@ -35,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by david on 1/26/17.
@@ -52,7 +53,16 @@ public class PubsubRestProvider
     }
   }
 
-  //TODO: May want to add summary of all topics for /ws/v1/pubsub/topics
+  @GET
+  @Path("topics")
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<PubsubBroker.TopicSummary> getTopics(@QueryParam("laterThan") Long timestamp, @Context HttpServletRequest request)
+  {
+    if (timestamp == null) {
+      timestamp = -1L;
+    }
+    return PubsubServer.getBroker().getTopics(timestamp);
+  }
 
   @GET
   @Path("topics/{topic}")

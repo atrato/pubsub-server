@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.AsyncContext;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -165,4 +166,26 @@ public class PubsubBroker
       return null;
     }
   }
+
+  public static class TopicSummary
+  {
+	  public String topic;
+	  public long lastUpdated;
+  }
+
+  public ArrayList<TopicSummary> getTopics(long timestamp)
+  {
+    ArrayList<TopicSummary> topics = new ArrayList<>();
+    Map<String, TimedTopicData> map = latestTopicData.asMap();
+    for (Map.Entry<String, TimedTopicData> e : map.entrySet()) {
+      if (e.getValue().timestamp > timestamp) {
+        TopicSummary ts = new TopicSummary();
+        ts.topic = e.getKey();
+        ts.lastUpdated = e.getValue().timestamp;
+        topics.add(ts);
+      }
+    }
+    return topics;
+  }
+
 }
