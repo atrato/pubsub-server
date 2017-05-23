@@ -19,6 +19,8 @@ package io.atrato.pubsubserver;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -43,6 +45,8 @@ import java.util.List;
 @Path("/pubsub")
 public class PubsubRestProvider
 {
+  private static final Logger LOG = LoggerFactory.getLogger(PubsubRestProvider.class);
+
   @JsonIgnoreProperties(ignoreUnknown=true)
   public static class NullInfo
   {
@@ -58,6 +62,7 @@ public class PubsubRestProvider
   @Produces(MediaType.APPLICATION_JSON)
   public List<PubsubBroker.TopicSummary> getTopics(@QueryParam("laterThan") Long timestamp, @Context HttpServletRequest request)
   {
+    LOG.debug("getTopics");
     if (timestamp == null) {
       timestamp = -1L;
     }
@@ -72,6 +77,7 @@ public class PubsubRestProvider
     if (timestamp == null) {
       timestamp = -1L;
     }
+    //LOG.debug("topic: {} poll: {}", topic, poll);
     PubsubBroker.TimedTopicData data = PubsubServer.getBroker().getLatestTopicData(topic, timestamp);
     if (data == null) {
       if (BooleanUtils.isTrue(poll)) {
@@ -107,6 +113,7 @@ public class PubsubRestProvider
         throw new NotFoundException();
       }
     }
+    LOG.debug("topic: {} poll: {} data: {}", topic, poll, (data != null ? data.getData() : data));
     return data;
   }
 
